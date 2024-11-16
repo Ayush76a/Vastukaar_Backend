@@ -18,13 +18,25 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// CORS Middleware
+// CORS Configuration
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://673906445a707de174f0e10f--vastukaar.netlify.app",
+  "https://vastukaar.netlify.app", // Add your deployed frontend domain here
+];
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://673906445a707de174f0e10f--vastukaar.netlify.app"],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    credentials: true, // Allow cookies and credentials
   })
 );
 
@@ -40,6 +52,7 @@ app.options("*", (req, res) => {
   res.sendStatus(204); // No Content
 });
 
+// Static Files Middleware
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes Middleware
@@ -55,7 +68,7 @@ app.get("/", (req, res) => {
 // Error Middleware
 app.use(errorHandler);
 
-// Connect to DB and start server
+// Connect to MongoDB and Start Server
 const PORT = process.env.PORT || 5000;
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -67,4 +80,4 @@ mongoose
       console.log(`Server Running on port ${PORT}`);
     });
   })
-  .catch((err) => console.log("Database Connection Error: ", err));
+  .catch((err) => console.error("Database Connection Error: ", err));
