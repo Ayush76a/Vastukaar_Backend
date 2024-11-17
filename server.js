@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 const allowedOrigins = [
   "http://localhost:3000",
   "https://673906445a707de174f0e10f--vastukaar.netlify.app",
-  "https://vastukaar.netlify.app", // Add your deployed frontend domain here
+  "https://vastukaar.netlify.app",
 ];
 
 app.use(
@@ -34,7 +34,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Added PATCH here
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Allow cookies and credentials
   })
@@ -47,7 +47,10 @@ app.options("*", (req, res) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS" // Added PATCH here
+  );
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.sendStatus(204); // No Content
 });
